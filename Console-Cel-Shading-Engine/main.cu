@@ -16,20 +16,9 @@
 
 #include <stdlib.h>
 #include <time.h>
+#include "wchar.h"
 
 using namespace algebra;
-
-// cmake generates a solution file
-// cmake findPackage
-
-/*
-namespace dims
-{
-	const SHORT WIDTH = 140;
-	const SHORT HEIGHT = 70;
-	const SHORT SIZE = WIDTH * HEIGHT;
-}
-*/
 
 void drawNoise(Terminal screen)
 {
@@ -37,7 +26,29 @@ void drawNoise(Terminal screen)
 	{
 		for (int j = 0; j < dims::WIDTH; j++)
 		{
+			//screen.drawPixel(i, j, FOREGROUND_BLUE | BACKGROUND_RED, rand() % 7 + 0x2582);
 			screen.drawPixel(i, j, rand() % 256);
+		}
+	}
+}
+
+// alpha from 0 to 69 expected
+void drawGrayscale(int x, int y, int alpha, Terminal screen)
+{
+	const int PALETTE_SIZE = 69;
+	const wchar_t PALETTE[PALETTE_SIZE] = L"$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,\"^`'.";
+
+	screen.drawPixel(x, y, FOREGROUND_INTENSITY, PALETTE[PALETTE_SIZE - alpha]);
+}
+
+void drawStaticGradient(Terminal screen, int& alpha)
+{
+	for (int x = 0; x < dims::WIDTH; x++)
+	{
+		alpha += int(100/dims::WIDTH);
+		for (int y = 0; y < dims::HEIGHT; y++)
+		{
+			drawGrayscale(x, y, alpha, screen);
 		}
 	}
 }
@@ -47,11 +58,11 @@ int main()
 	srand(time(0));
 
 	CHAR_INFO ptr[dims::SIZE];
-
 	
-	Terminal Screen = Terminal(ptr, 15);
-	
+	Terminal Screen = Terminal(ptr, 5);
 
+	//
+	
 	if (!Screen.activate())
 	{
 		std::cout << "there was an error" << std::endl;
@@ -66,11 +77,5 @@ int main()
 		Screen.draw();
 		Screen.clear();
 	}
-
-	//wprintf(L"\x1b[31mThis text has a red foreground using SGR.31.\r\n");
-	//wprintf(L"\x1b[38;2;255;0;0;48;2;0;255;0m▄");
-	//printf("\u2580");
-
-	//std::cout << "\u2580" << std::endl;
 
 }

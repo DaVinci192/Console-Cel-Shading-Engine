@@ -149,7 +149,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <CudaCompile Include="algebra.cu" />
-    <CudaCompile Include="terminal.cu" />
     <CudaCompile Include="LinAlg.cu" />
     <CudaCompile Include="main.cu" />
   </ItemGroup>

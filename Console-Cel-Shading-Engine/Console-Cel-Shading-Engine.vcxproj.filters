@@ -24,9 +24,6 @@
     <CudaCompile Include="main.cu">
       <Filter>Source Files</Filter>
     </CudaCompile>
-    <CudaCompile Include="terminal.cu">
-      <Filter>Source Files</Filter>
-    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="algebra.cuh">
