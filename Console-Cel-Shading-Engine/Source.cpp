@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 
 #include <cuda_runtime.h>
 #include <cassert>
@@ -11,8 +11,8 @@
 #include <wchar.h>
 #include <Windows.h>
 
-#include "algebra.h"
-#include "terminal.cuh"
+#include "algebra.cuh"
+#include "terminal.h"
 
 #include <stdlib.h>
 #include <time.h>
@@ -45,7 +45,7 @@ void drawStaticGradient(Terminal screen, int& alpha)
 {
 	for (int x = 0; x < dims::WIDTH; x++)
 	{
-		alpha += int(100/dims::WIDTH);
+		alpha += int(100 / dims::WIDTH);
 		for (int y = 0; y < dims::HEIGHT; y++)
 		{
 			drawGrayscale(x, y, alpha, screen);
@@ -53,22 +53,24 @@ void drawStaticGradient(Terminal screen, int& alpha)
 	}
 }
 
+
+
 int main()
 {
 	srand(time(0));
 
 	CHAR_INFO ptr[dims::SIZE];
-	
+
 	Terminal Screen = Terminal(ptr, 5);
-	
+
 	if (!Screen.activate())
 	{
 		std::cout << "there was an error" << std::endl;
 	}
 	Screen.clear();
-	
-	
-	
+
+
+
 	while (1)
 	{
 		drawNoise(Screen);

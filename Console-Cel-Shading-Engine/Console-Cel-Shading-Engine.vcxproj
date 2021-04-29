@@ -148,13 +148,11 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CudaCompile Include="algebra.cu" />
-    <CudaCompile Include="LinAlg.cu" />
-    <CudaCompile Include="main.cu" />
+    <ClInclude Include="algebra.cuh" />
+    <ClInclude Include="terminal.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="algebra.cuh" />
-    <ClInclude Include="terminal.cuh" />
+    <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
