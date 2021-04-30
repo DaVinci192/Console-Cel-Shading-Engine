@@ -8,24 +8,20 @@
 #include <vector>
 #include <WinCon.h>
 #include <WinUser.h>
+#include <chrono>
 
 template<typename T>
 class Matrix;
-
-namespace dims
-{
-	const SHORT WIDTH = 100;
-	const SHORT HEIGHT = 100;
-	const SHORT SIZE = WIDTH * HEIGHT;
-}
 
 class Terminal
 {
 private:
 	HANDLE hConsole;
+	std::vector<CHAR_INFO> pixels;
 	CHAR_INFO* buffer;
 	SHORT width;
 	SHORT height;
+	SHORT size;
 	SHORT pixelSize;
 	SMALL_RECT consoleArea;
 
@@ -34,7 +30,12 @@ private:
 	bool removeCursor();
 
 public:
-	Terminal(CHAR_INFO ptr[], SHORT pixelSize/*int width0, int height0*/);
+	Terminal(SHORT width0, SHORT height0, SHORT pixelSize/*int width0, int height0*/);
+	~Terminal();
+	void run();
+	virtual void update(float fElapsedTime) = 0;
+	SHORT getWidth();
+	SHORT getHeight();
 	bool activate();
 	void draw();
 	void drawPixel(int x, int y, unsigned short color, wchar_t glyph = 0x2588);
@@ -54,12 +55,11 @@ public:
 // ------------------------------------------------------------------------- //
 
 
-
-
-Terminal::Terminal(CHAR_INFO ptr[], SHORT pixelSize0)
+Terminal::Terminal(SHORT width0, SHORT height0,/*CHAR_INFO ptr[]*/ SHORT pixelSize0)
 {
-	width = dims::WIDTH;
-	height = dims::HEIGHT;
+	width = width0;//dims::WIDTH;
+	height = height0;//dims::HEIGHT;
+	size = width * height;
 	hConsole = CreateConsoleScreenBuffer(
 		GENERIC_READ | GENERIC_WRITE,
 		0,
@@ -68,8 +68,48 @@ Terminal::Terminal(CHAR_INFO ptr[], SHORT pixelSize0)
 		NULL
 	);
 	consoleArea = { 0, 0, 1, 1 };
-	buffer = ptr;
+	buffer = new CHAR_INFO[width * height];//ptr;
 	pixelSize = pixelSize0;
+}
+
+Terminal::~Terminal()
+{
+	delete[] buffer;
+}
+
+void Terminal::run()
+{
+	if (!(*this).activate())
+		(*this).clear();
+
+	// timing code taken from Javidx9: https://github.com/OneLoneCoder/videos/blob/master/olcConsoleGameEngine.h
+
+	auto tp1 = std::chrono::system_clock::now();
+	auto tp2 = std::chrono::system_clock::now();
+
+	
+
+	while (1) // implement some exit parameter in the future
+	{
+		tp2 = std::chrono::system_clock::now();
+		std::chrono::duration<float> elapsedTime = tp2 - tp1;
+		tp1 = tp2;
+		float fElapsedTime = elapsedTime.count();
+
+		(*this).update(fElapsedTime);
+	}
+
+
+}
+
+SHORT Terminal::getWidth()
+{
+	return width;
+}
+
+SHORT Terminal::getHeight()
+{
+	return height;
 }
 
 bool Terminal::setFont(SHORT width0, SHORT height0)
@@ -100,6 +140,7 @@ bool Terminal::setSize(SMALL_RECT& area)
 
 	// https://cecilsunkure.blogspot.com/2011/11/windows-console-game-writing-to-console.html
 
+	//area = { 0, 0, SHORT(width - 1), SHORT(height - 1) };
 	area = { 0, 0, SHORT(width - 1), SHORT(height - 1) };
 
 	if (!SetConsoleWindowInfo(hConsole, TRUE, &area) ||
@@ -124,7 +165,6 @@ bool Terminal::activate()
 
 	if (hConsole == INVALID_HANDLE_VALUE)
 		return false;
-
 
 	DWORD dwMode = 0;
 	if (!GetConsoleMode(hConsole, &dwMode))
@@ -214,7 +254,7 @@ void Terminal::drawBezier(int x, int y, int z)
 */
 void Terminal::clear()
 {
-	for (int i = 0; i < dims::SIZE; i++)
+	for (int i = 0; i < size; i++)
 	{
 		buffer[i].Char.UnicodeChar = 0x0020;
 		buffer[i].Attributes = 0x0000;

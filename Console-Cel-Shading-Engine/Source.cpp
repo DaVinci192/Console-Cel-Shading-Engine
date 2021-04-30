@@ -5,6 +5,7 @@
 
 #include <vector>;
 #include <algorithm>;
+#include <stack>
 
 #include "device_launch_parameters.h"
 
@@ -18,64 +19,73 @@
 #include <time.h>
 #include "wchar.h"
 
+
 using namespace algebra;
 
-void drawNoise(Terminal screen)
+void drawNoise(Terminal& screen)
 {
-	for (int i = 0; i < dims::HEIGHT; i++)
+	
+}
+
+class NoiseEngine : public virtual Terminal
+{
+public:
+	NoiseEngine(SHORT width0, SHORT height0, SHORT pixelSize0) : Terminal(width0, height0, pixelSize0) {}
+
+
+	void update(float fElapsedTime) override
 	{
-		for (int j = 0; j < dims::WIDTH; j++)
+		for (int i = 0; i < (*this).getWidth(); i++)
 		{
-			//screen.drawPixel(i, j, FOREGROUND_BLUE | BACKGROUND_RED, rand() % 7 + 0x2582);
-			screen.drawPixel(i, j, rand() % 256);
+			for (int j = 0; j < (*this).getHeight(); j++)
+			{
+				//screen.drawPixel(i, j, FOREGROUND_BLUE | BACKGROUND_RED, rand() % 7 + 0x2582);
+				(*this).drawPixel(i, j, rand() % 256);
+			}
 		}
+		(*this).draw();
 	}
-}
+};
 
-// alpha from 0 to 69 expected
-void drawGrayscale(int x, int y, int alpha, Terminal screen)
+//const wchar_t PALETTE[69] = L"$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,\"^`'.";
+
+
+class MazeGenerator : public virtual Terminal
 {
-	const int PALETTE_SIZE = 69;
-	const wchar_t PALETTE[PALETTE_SIZE] = L"$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,\"^`'.";
-
-	screen.drawPixel(x, y, FOREGROUND_INTENSITY, PALETTE[PALETTE_SIZE - alpha]);
-}
-
-void drawStaticGradient(Terminal screen, int& alpha)
-{
-	for (int x = 0; x < dims::WIDTH; x++)
+public:
+	MazeGenerator(SHORT width0, SHORT height0, SHORT pixelSize0) : Terminal(width0, height0, pixelSize0) {}
+	
+	void update(float fElapsedTime) override
 	{
-		alpha += int(100 / dims::WIDTH);
-		for (int y = 0; y < dims::HEIGHT; y++)
-		{
-			drawGrayscale(x, y, alpha, screen);
-		}
-	}
-}
+		int cellWidth = 3;
+		int wallWidth = 1;
 
+		for (int i = 0; i < (*this).getWidth(); i++)
+		{
+			for (int j = 0; j < (*this).getHeight(); j++)
+			{
+				if (i % (cellWidth + wallWidth) == 0 ||
+					j % (cellWidth + wallWidth) == 0)
+				{
+					(*this).drawPixel(i, j, FOREGROUND_INTENSITY);
+				}
+
+
+			}
+		}
+		(*this).draw();
+	}
+
+};
 
 
 int main()
 {
 	srand(time(0));
 
-	CHAR_INFO ptr[dims::SIZE];
-
-	Terminal Screen = Terminal(ptr, 5);
-
-	if (!Screen.activate())
-	{
-		std::cout << "there was an error" << std::endl;
-	}
-	Screen.clear();
+	MazeGenerator Screen = MazeGenerator(61, 61, 15);
 
 
-
-	while (1)
-	{
-		drawNoise(Screen);
-		Screen.draw();
-		Screen.clear();
-	}
+	Screen.run();
 
 }
