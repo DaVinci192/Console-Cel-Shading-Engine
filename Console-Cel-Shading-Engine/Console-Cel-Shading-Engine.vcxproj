@@ -149,6 +149,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="algebra.cuh" />
+    <ClInclude Include="stackMazeGenerator.h" />
     <ClInclude Include="terminal.h" />
   </ItemGroup>
   <ItemGroup>

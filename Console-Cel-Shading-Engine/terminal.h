@@ -32,7 +32,7 @@ private:
 public:
 	Terminal(SHORT width0, SHORT height0, SHORT pixelSize/*int width0, int height0*/);
 	~Terminal();
-	void run();
+	virtual void run();
 	virtual void update(float fElapsedTime) = 0;
 	SHORT getWidth();
 	SHORT getHeight();
@@ -68,13 +68,14 @@ Terminal::Terminal(SHORT width0, SHORT height0,/*CHAR_INFO ptr[]*/ SHORT pixelSi
 		NULL
 	);
 	consoleArea = { 0, 0, 1, 1 };
-	buffer = new CHAR_INFO[width * height];//ptr;
+	buffer = new CHAR_INFO[width * height];
 	pixelSize = pixelSize0;
 }
 
 Terminal::~Terminal()
 {
 	delete[] buffer;
+	buffer = NULL;
 }
 
 void Terminal::run()

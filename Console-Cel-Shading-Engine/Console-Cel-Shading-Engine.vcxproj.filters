@@ -21,6 +21,9 @@
     <ClInclude Include="algebra.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="stackMazeGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">

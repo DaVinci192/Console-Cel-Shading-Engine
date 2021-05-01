@@ -16,16 +16,18 @@
 #include "terminal.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <time.h>
 #include "wchar.h"
 
+#include "stackMazeGenerator.h"
 
 using namespace algebra;
 
-void drawNoise(Terminal& screen)
-{
-	
-}
+
+
+// ASCII palette for future art
+//const wchar_t PALETTE[69] = L"$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,\"^`'.";
 
 class NoiseEngine : public virtual Terminal
 {
@@ -45,45 +47,19 @@ public:
 		}
 		(*this).draw();
 	}
+
+
 };
 
-//const wchar_t PALETTE[69] = L"$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,\"^`'.";
 
 
-class MazeGenerator : public virtual Terminal
-{
-public:
-	MazeGenerator(SHORT width0, SHORT height0, SHORT pixelSize0) : Terminal(width0, height0, pixelSize0) {}
-	
-	void update(float fElapsedTime) override
-	{
-		int cellWidth = 3;
-		int wallWidth = 1;
-
-		for (int i = 0; i < (*this).getWidth(); i++)
-		{
-			for (int j = 0; j < (*this).getHeight(); j++)
-			{
-				if (i % (cellWidth + wallWidth) == 0 ||
-					j % (cellWidth + wallWidth) == 0)
-				{
-					(*this).drawPixel(i, j, FOREGROUND_INTENSITY);
-				}
-
-
-			}
-		}
-		(*this).draw();
-	}
-
-};
 
 
 int main()
 {
 	srand(time(0));
 
-	MazeGenerator Screen = MazeGenerator(61, 61, 15);
+	MazeGenerator Screen = MazeGenerator(57, 57, 15, 3, 1);
 
 
 	Screen.run();
